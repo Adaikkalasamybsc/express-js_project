@@ -1,0 +1,94 @@
+//search.html:----
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style type="text/css">
+           #app{
+          width: 300px;
+          height: 300px;
+          border: 2px solid red;
+          border-radius: 10px;
+          position: absolute;
+          top: 10%;
+          right: 40%;
+          text-align: center;
+        }
+        input{
+          width: 200px;
+          height: 20px;
+          border: 2px solid black;
+          border-radius: 20px;
+          font-size: 15px;
+          font-weight: bold;
+          text-align: center;
+          margin-top: 10%;
+        }
+       #spt{
+        width: 270px;
+        height: 40px;
+        background-color: blue;
+        font-size: 20px;
+        font-weight: bold;
+       } 
+       #spt:hover{
+        background-color: red;
+       }
+ 
+    </style>
+
+</head>
+<body>
+       
+    <h2><center><u>find data to database</u></center></h2>
+         <form action="http://127.0.0.1:8787/Search" method="post" id="app">
+              <h2><center><u><font color="red">Exam Result</font></u></center></h2>
+      <!-- <input type="number" placeholder="enter Roll no" name="t1"><br><br>     -->
+      <input type="submit" value="find/Search" id="spt"><br><br> 
+       </form>
+</body>
+</html>
+-----search.js-----
+ var app=require("express")()
+ var bodyparser=require("body-parser")
+ var urlencoded=bodyparser.urlencoded({extended:false})
+ app.post("/Search",urlencoded,(request,response)=>{
+//   var rollno=parseInt(request.body.t1)
+   var ad=require("mongodb").MongoClient
+   var url="mongodb://127.0.0.1:27017/"
+   ad.connect(url,(err,db)=>{
+    var dbobj=db.db("students")                                       
+   // dbobj.collection("studentdata").findOne({id:rollno},(err,res)=>{
+      dbobj.collection("studentdata").find().toArray((err,res)=>{
+           if(err)
+       console.log(err.tostring())
+       else{ 
+        if(res!=null)
+        {
+      //  var ans="<h1><center><font color='red'><u>STUDENT EXAM RESULT</u></font></center</h1>"+"<table align='center' bgcolor='skyblue'border='2' with='600px' height='150px' <tr><th>ROLL NO</th><th>STUDENT NAME</th><th>TAMIL</th><th>ENGLISH</th><th>MATHS</th><th>SCIENCE</th><th>SOCIAL</th><th>RESULT</th></tr>"  
+      //  ans=ans+"<tr><td>"+res.id+"</td><td>"+res.name+"</td><td>"+res.tamil+"</td><td>"+res.english+"</td><td>"+res.maths+"</td><td>"+res.science+"</td><td>"+res.social+"</td><td>"+res.result+"</td></tr>"
+
+           // --------find all data--------------    
+          var ans="<table align='center' bgcolor='red'border='2' <tr><th>ROLL NO</th><th>STUDENT NAME</th><th>TAMIL</th><th>ENGLISH</th><th>MATHS</th><th>SCIENCE</th><th>SOCIAL</th><th>RESULT</th></tr>"  
+        for(k of res){
+            ans=ans+"<tr><td>"+k.id+"</td><td>"+k.name+"</td><td>"+k.tamil+"</td><td>"+k.english+"</td><td>"+k.maths+"</td><td>"+k.science+"</td><td>"+k.social+"</td><td>"+k.result+"</td></tr>"
+
+            }
+     // response.send("details:<br>"+ans)
+     ans=ans+"</table>"
+      response.send(ans)
+     console.log("successfull find")
+     console.log(res)
+     }
+     else{
+       response.send("<h1 color='red'>Roll no :"+rollno+" "+"Not Found</h1")  
+     }
+    }
+      db.close
+    })
+   })   
+}).listen(8787)
+ console.log("port running-----8787")
+ 
