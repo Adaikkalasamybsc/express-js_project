@@ -1,0 +1,99 @@
+//--insert.html--
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>insert data</title>
+    <style type="text/css">
+        #app{
+          width: 400px;
+          height: 530px;
+          border: 2px solid red;
+          border-radius: 10px;
+          position: absolute;
+          top: 10%;
+          right: 35%;
+          text-align: center;
+        }
+        input{
+          width: 200px;
+          height: 20px;
+          border: 2px solid black;
+          border-radius: 20px;
+          font-size: 15px;
+          font-weight: bold;
+          text-align: center;
+        }
+       #spt{
+        width: 270px;
+        height: 40px;
+        background-color: blue;
+        font-size: 20px;
+        font-weight: bold;
+       } 
+       #spt:hover{
+        background-color: red;
+       }
+    </style>
+</head>
+<body>
+        <h2><center><u>insert data to database</u></center></h2>
+          <div id="app">
+            <form action="http://127.0.0.1:7575/insert" method="post">
+                   <h2><font color="green"><u>student details</u></font></h2>
+               ROLL NO     : <input type="number" name="t1" placeholder="enter roll no"><br><br>
+               NAME        : <input type="text"   name="t2" placeholder="student name"><br><br>
+               TAMIL MARK  : <input type="number" name="t3" placeholder="tamil mark"><br><br>
+               ENGLISH MARK: <input type="number" name="t4" placeholder="english mark"><br><br>
+               MATHS MARK  : <input type="number" name="t5" placeholder="maths mark"><br><br>
+               SCIENCE MARK: <input type="number" name="t6" placeholder="science mark"><br><br>
+               SOCIAL MARK : <input type="number" name="t7" placeholder=" social mark"><br><br>                
+               RESULT      : <input type="text"   name="t8" placeholder="pass/fail"><br><br>
+           <input type="submit" value="insert/save" id="spt"><br><br>     
+            </form>
+            </div>
+</body>
+</html>
+----------------------------------------js file----------------
+insert.js:-----
+var app=require("express")()
+var bodyparser=require("body-parser")
+ var  urlencoded=bodyparser.urlencoded({extended:false})
+app.post("/insert",urlencoded,(request,response)=>{
+    var rollno=parseInt(request.body.t1)
+    var studname=(request.body.t2)
+    var tamil=parseInt(request.body.t3)
+    var english=parseInt(request.body.t4)
+    var maths=parseInt(request.body.t5)
+    var science=parseInt(request.body.t6)
+    var social=parseInt(request.body.t7)
+    var result=(request.body.t8)
+    //---------------------------- 
+    var MongoClient=require("mongodb").MongoClient
+    var url="mongodb://127.0.0.1:27017/"
+      MongoClient.connect(url,(err,db)=>{
+        console.log("mongo db accepted in node")
+        var dbobj=db.db("students")
+        dbobj.collection("studentdata").insertOne({
+            id:rollno,
+            name:studname,
+            tamil:tamil,
+            english:english,
+            maths:maths,
+            science:science,
+           social:social,
+           result:result},(err,res)=>{
+            if(err)
+           console.log(err)
+           else{
+            response.send("<h1>sucessfully inserted in student data</h1>")
+           console.log("successfull inserted")
+           }
+           console.log(res)
+           db.close()
+        })
+      })
+ //--------------------------------
+}).listen(7575)
+console.log("port running in-----7575")
