@@ -1,0 +1,96 @@
+//update.html--------
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>insert data</title>
+    <style type="text/css">
+        #app{
+          width: 400px;
+          height: 530px;
+          border: 2px solid red;
+          border-radius: 10px;
+          position: absolute;
+          top: 10%;
+          right: 35%;
+          text-align: center;
+        }
+        input{
+          width: 200px;
+          height: 20px;
+          border: 2px solid black;
+          border-radius: 20px;
+          font-size: 15px;
+          font-weight: bold;
+          text-align: center;
+          border-color:crimson;
+        }
+       #spt{
+        width: 270px;
+        height: 40px;
+        background-color: blue;
+        font-size: 20px;
+        font-weight: bold;
+       } 
+       #spt:hover{
+        background-color: red;
+       }
+    </style>
+</head>
+<body>
+        <h2><center><u>update data in database</u></center></h2>
+          <div id="app">
+            <form action="http://127.0.0.1:7979/update" method="post">
+                   <h2><font color="green"><u>student details -Update</u></font></h2>
+                <input type="number" name="t1" placeholder="enter roll no"><br><br>
+                <input type="text"   name="t2" placeholder="student name"><br><br>
+                <input type="number" name="t3" placeholder="tamil mark"><br><br>
+                <input type="number" name="t4" placeholder="english mark"><br><br>
+                <input type="number" name="t5" placeholder="maths mark"><br><br>
+                <input type="number" name="t6" placeholder="science mark"><br><br>
+                <input type="number" name="t7" placeholder=" social mark"><br><br>                
+                <input type="text"   name="t8" placeholder="pass/fail"><br><br>
+           <input type="submit" value="Update data" id="spt"><br><br>     
+            </form>
+            </div>
+</body>
+</html>
+//--update.js-----
+//---------update data in database---------------------
+var app=require("express")()
+var bodyparser=require("body-parser")
+var urlencode=bodyparser.urlencoded({extended:false})
+app.post("/update",urlencode,(request,response)=>{
+    var empid=parseInt(request.body.t1)
+    var studname=(request.body.t2)
+    var tamil=parseInt(request.body.t3)
+    var english=parseInt(request.body.t4)
+    var maths=parseInt(request.body.t5)
+    var science=parseInt(request.body.t6)
+    var social=parseInt(request.body.t7)
+    var result=(request.body.t8)
+
+   //==========================
+var MongoClient=require("mongodb").MongoClient
+var url= "mongodb://127.0.0.1:27017/"
+ MongoClient.connect(url,(err,db)=>{
+   var old={id:empid}
+   var newvalue={$set:{name:studname,
+                       tamil:tamil,
+                       english:english,
+                       maths:maths,
+                       science:science,
+                       social:social,
+                       result:result}}
+    var dbobj=db.db("students")
+    dbobj.collection("studentdata").updateMany(old,newvalue,(err,res)=>{
+       response.send("<h1> updated success</h1>") 
+       console.log("successfully updated")
+       console.log(res)
+       db.close
+   })
+ })
+   //=========================== 
+}).listen(7979)
+console.log("server running-----7979---")
